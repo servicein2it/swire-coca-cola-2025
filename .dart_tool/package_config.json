@@ -236,6 +236,24 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "firebase_messaging",
+      "rootUri": "file:///Users/jetzzn/.pub-cache/hosted/pub.dev/firebase_messaging-15.1.5",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "firebase_messaging_platform_interface",
+      "rootUri": "file:///Users/jetzzn/.pub-cache/hosted/pub.dev/firebase_messaging_platform_interface-4.5.48",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "firebase_messaging_web",
+      "rootUri": "file:///Users/jetzzn/.pub-cache/hosted/pub.dev/firebase_messaging_web-3.9.4",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "firebase_performance",
       "rootUri": "file:///Users/jetzzn/.pub-cache/hosted/pub.dev/firebase_performance-0.10.0+10",
       "packageUri": "lib/",
@@ -438,6 +456,12 @@
       "rootUri": "file:///Users/jetzzn/.pub-cache/hosted/pub.dev/iregexp-0.1.2",
       "packageUri": "lib/",
       "languageVersion": "3.0"
+    },
+    {
+      "name": "js",
+      "rootUri": "file:///Users/jetzzn/.pub-cache/hosted/pub.dev/js-0.6.7",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
     },
     {
       "name": "json_annotation",
@@ -1022,7 +1046,7 @@
       "languageVersion": "3.0"
     }
   ],
-  "generated": "2025-03-21T04:48:57.562226Z",
+  "generated": "2025-03-21T07:30:30.903956Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///Users/jetzzn/development/flutter",

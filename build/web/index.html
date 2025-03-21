@@ -1,37 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    Alternatively, build your application passing the --base-href parameter
-    specifying the new root path of your web app.
-
-    Fore more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-  -->
   <base href="/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Swire Coca-Cola Leaders Summit 2025">
 
-  
-
-  
-
   <!-- Favicon -->
   <link rel="icon" href="Leaders_Summit__with_Bangkok.png" sizes="any"/>
   
-
   <!-- Open Graph & SEO tags -->
   <meta property="og:title" content="Swire Coca-Cola Leaders Summit 2025" />
   <meta property="og:description" content="Built with FlutterFlow." />
@@ -44,20 +27,201 @@
   <title> Swire Coca-Cola Leaders Summit 2025 </title>
   <meta name="description" content="Built with FlutterFlow." />
     
-
   <!-- Status Bar color in Safari browser (iOS) and PWA -->
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
   <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#ffffff">
 
   <link rel="manifest" href="manifest.json">
   
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-messaging-compat.js"></script>
+  
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYsPbYAOFRelOGZPywaX_OD_mPdsECAKA",
+      authDomain: "swire-coca-cola.firebaseapp.com",
+      projectId: "swire-coca-cola",
+      storageBucket: "swire-coca-cola.firebasestorage.app",
+      messagingSenderId: "504053208911",
+      appId: "1:504053208911:web:6520c0b2fffdc0e3ded73a",
+      measurementId: "G-5JNLK7N1EE"
+    };
+    
+    // VAPID key
+    const vapidKey = "BC0MO0z7yU2oEwzFQIq9vx54rcL-a02viFq0548EcazydnDz8fiB5ZnzybxZotnQN16o-B7Lh4detHy0a9aaYx4";
+    
+    // ลงทะเบียน Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/firebase-messaging-sw.js')
+          .then(function(registration) {
+            console.log('Service Worker registered:', registration.scope);
+          })
+          .catch(function(error) {
+            console.error('Service Worker registration failed:', error);
+          });
+      });
+    }
+    
+    // ตั้งค่า Firebase และขอสิทธิ์การแจ้งเตือน
+    window.addEventListener('load', function() {
+      console.log('Window loaded, initializing Firebase...');
+      
+      // delay เล็กน้อยเพื่อให้แน่ใจว่า page โหลดสมบูรณ์
+      setTimeout(function() {
+        try {
+          // เริ่มต้น Firebase
+          firebase.initializeApp(firebaseConfig);
+          console.log('Firebase initialized');
+          
+          // ตรวจสอบว่าได้รับสิทธิ์การแจ้งเตือนแล้วหรือไม่
+          if ('Notification' in window && Notification.permission === 'granted') {
+            console.log('Notification permission already granted');
+            initializeFCM();
+            return;
+          }
+          
+          // ถ้ายังไม่ได้รับสิทธิ์ และยังไม่เคยปฏิเสธ ให้แสดง popup
+          if ('Notification' in window && Notification.permission !== 'denied') {
+            console.log('Showing notification overlay');
+            showNotificationOverlay();
+          }
+        } catch (error) {
+          console.error('Firebase initialization error:', error);
+        }
+      }, 1000);
+    });
+    
+    // แสดง overlay สำหรับขอสิทธิ์
+    function showNotificationOverlay() {
+      var overlay = document.createElement('div');
+      overlay.id = 'notification-overlay';
+      overlay.style.position = 'fixed';
+      overlay.style.top = '0';
+      overlay.style.left = '0';
+      overlay.style.width = '100%';
+      overlay.style.height = '100%';
+      overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+      overlay.style.zIndex = '99999';
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      
+      var content = document.createElement('div');
+      content.style.backgroundColor = 'white';
+      content.style.padding = '20px';
+      content.style.borderRadius = '10px';
+      content.style.maxWidth = '80%';
+      content.style.textAlign = 'center';
+      
+      var heading = document.createElement('h3');
+      heading.textContent = 'การแจ้งเตือน';
+      heading.style.margin = '0 0 10px 0';
+      heading.style.color = '#CE2127';
+      
+      var message = document.createElement('p');
+      message.textContent = 'กรุณาอนุญาตการแจ้งเตือนเพื่อรับข่าวสารล่าสุดเกี่ยวกับงาน Leaders Summit';
+      message.style.margin = '0 0 15px 0';
+      
+      var proceedBtn = document.createElement('button');
+      proceedBtn.textContent = 'อนุญาต';
+      proceedBtn.style.backgroundColor = '#CE2127';
+      proceedBtn.style.color = 'white';
+      proceedBtn.style.border = 'none';
+      proceedBtn.style.padding = '10px 15px';
+      proceedBtn.style.borderRadius = '5px';
+      proceedBtn.style.cursor = 'pointer';
+      proceedBtn.style.marginRight = '10px';
+      
+      var cancelBtn = document.createElement('button');
+      cancelBtn.textContent = 'ยกเลิก';
+      cancelBtn.style.backgroundColor = '#ffffff';
+      cancelBtn.style.color = '#333';
+      cancelBtn.style.border = '1px solid #ccc';
+      cancelBtn.style.padding = '10px 15px';
+      cancelBtn.style.borderRadius = '5px';
+      cancelBtn.style.cursor = 'pointer';
+      
+      proceedBtn.onclick = function() {
+        overlay.remove();
+        requestNotificationPermission();
+      };
+      
+      cancelBtn.onclick = function() {
+        overlay.remove();
+      };
+      
+      content.appendChild(heading);
+      content.appendChild(message);
+      content.appendChild(proceedBtn);
+      content.appendChild(cancelBtn);
+      overlay.appendChild(content);
+      
+      document.body.appendChild(overlay);
+    }
+    
+    // ขอสิทธิ์การแจ้งเตือน
+    function requestNotificationPermission() {
+      console.log('Requesting notification permission...');
+      
+      if (!('Notification' in window)) {
+        console.log('This browser does not support notifications');
+        return;
+      }
+      
+      Notification.requestPermission()
+        .then(function(permission) {
+          console.log('Notification permission:', permission);
+          
+          if (permission === 'granted') {
+            console.log('Notification permission granted!');
+            initializeFCM();
+          } else {
+            console.log('Notification permission denied');
+          }
+        })
+        .catch(function(error) {
+          console.error('Error requesting permission:', error);
+        });
+    }
+    
+    // เริ่มต้น FCM เมื่อได้รับสิทธิ์
+    function initializeFCM() {
+      var messaging = firebase.messaging();
+      
+      messaging.getToken({vapidKey: vapidKey})
+        .then(function(token) {
+          if (token) {
+            console.log('FCM Token:', token);
+            // ส่ง token ไปเก็บที่เซิร์ฟเวอร์
+          } else {
+            console.log('No registration token available');
+          }
+        })
+        .catch(function(err) {
+          console.error('Error getting token:', err);
+        });
+      
+      messaging.onMessage(function(payload) {
+        console.log('Message received in foreground:', payload);
+        
+        // แสดงการแจ้งเตือนแบบ foreground
+        if (payload.notification) {
+          const notificationTitle = payload.notification.title;
+          const notificationOptions = {
+            body: payload.notification.body,
+            icon: 'Leaders_Summit__with_Bangkok.png'
+          };
+          
+          new Notification(notificationTitle, notificationOptions);
+        }
+      });
+    }
+  </script>
 </head>
 <body>
-  
-  
-  
-  
-  
   <script>
     (()=>{var P=()=>navigator.vendor==="Google Inc."||navigator.agent==="Edg/",E=()=>typeof ImageDecoder>"u"?!1:P(),L=()=>typeof Intl.v8BreakIterator<"u"&&typeof Intl.Segmenter<"u",W=()=>{let n=[0,97,115,109,1,0,0,0,1,5,1,95,1,120,0];return WebAssembly.validate(new Uint8Array(n))},w={hasImageCodecs:E(),hasChromiumBreakIterators:L(),supportsWasmGC:W(),crossOriginIsolated:window.crossOriginIsolated};function l(...n){return new URL(C(...n),document.baseURI).toString()}function C(...n){return n.filter(t=>!!t).map((t,i)=>i===0?_(t):j(_(t))).filter(t=>t.length).join("/")}function j(n){let t=0;for(;t<n.length&&n.charAt(t)==="/";)t++;return n.substring(t)}function _(n){let t=n.length;for(;t>0&&n.charAt(t-1)==="/";)t--;return n.substring(0,t)}function T(n,t){return n.canvasKitBaseUrl?n.canvasKitBaseUrl:t.engineRevision&&!t.useLocalCanvasKit?C("https://www.gstatic.com/flutter-canvaskit",t.engineRevision):"canvaskit"}var v=class{constructor(){this._scriptLoaded=!1}setTrustedTypesPolicy(t){this._ttPolicy=t}async loadEntrypoint(t){let{entrypointUrl:i=l("main.dart.js"),onEntrypointLoaded:r,nonce:e}=t||{};return this._loadJSEntrypoint(i,r,e)}async load(t,i,r,e,a){a??=o=>{o.initializeEngine(r).then(c=>c.runApp())};let{entryPointBaseUrl:s}=r;if(t.compileTarget==="dart2wasm")return this._loadWasmEntrypoint(t,i,s,a);{let o=t.mainJsPath??"main.dart.js",c=l(s,o);return this._loadJSEntrypoint(c,a,e)}}didCreateEngineInitializer(t){typeof this._didCreateEngineInitializerResolve=="function"&&(this._didCreateEngineInitializerResolve(t),this._didCreateEngineInitializerResolve=null,delete _flutter.loader.didCreateEngineInitializer),typeof this._onEntrypointLoaded=="function"&&this._onEntrypointLoaded(t)}_loadJSEntrypoint(t,i,r){let e=typeof i=="function";if(!this._scriptLoaded){this._scriptLoaded=!0;let a=this._createScriptTag(t,r);if(e)console.debug("Injecting <script> tag. Using callback."),this._onEntrypointLoaded=i,document.head.append(a);else return new Promise((s,o)=>{console.debug("Injecting <script> tag. Using Promises. Use the callback approach instead!"),this._didCreateEngineInitializerResolve=s,a.addEventListener("error",o),document.head.append(a)})}}async _loadWasmEntrypoint(t,i,r,e){if(!this._scriptLoaded){this._scriptLoaded=!0,this._onEntrypointLoaded=e;let{mainWasmPath:a,jsSupportRuntimePath:s}=t,o=l(r,a),c=l(r,s);this._ttPolicy!=null&&(c=this._ttPolicy.createScriptURL(c));let d=(await import(c)).compileStreaming(fetch(o)),f;t.renderer==="skwasm"?f=(async()=>{let m=await i.skwasm;return window._flutter_skwasmInstance=m,{skwasm:m.wasmExports,skwasmWrapper:m,ffi:{memory:m.wasmMemory}}})():f=Promise.resolve({}),await(await(await d).instantiate(await f)).invokeMain()}}_createScriptTag(t,i){let r=document.createElement("script");r.type="application/javascript",i&&(r.nonce=i);let e=t;return this._ttPolicy!=null&&(e=this._ttPolicy.createScriptURL(t)),r.src=e,r}};async function I(n,t,i){if(t<0)return n;let r,e=new Promise((a,s)=>{r=setTimeout(()=>{s(new Error(`${i} took more than ${t}ms to resolve. Moving on.`,{cause:I}))},t)});return Promise.race([n,e]).finally(()=>{clearTimeout(r)})}var y=class{setTrustedTypesPolicy(t){this._ttPolicy=t}loadServiceWorker(t){if(!t)return console.debug("Null serviceWorker configuration. Skipping."),Promise.resolve();if(!("serviceWorker"in navigator)){let o="Service Worker API unavailable.";return window.isSecureContext||(o+=`
 The current context is NOT secure.`,o+=`
