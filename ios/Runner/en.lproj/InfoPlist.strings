@@ -1,0 +1,2 @@
+NSCameraUsageDescription = "Please allow to open camera";
+PermissionGroupNotification = "Allow to push notification";

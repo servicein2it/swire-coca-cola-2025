@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "504053208911",
+    "project_id": "swire-coca-cola",
+    "storage_bucket": "swire-coca-cola.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:504053208911:android:c2d1272fc34c0c6fded73a",
+        "android_client_info": {
+          "package_name": "com.mycompany.abbotapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLxIF0w2qr0bTeIlvFQ_Va-aOFeL2F7qY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
